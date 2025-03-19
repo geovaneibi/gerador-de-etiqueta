@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Etiquetas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        form { max-width: 400px; margin: auto; display: flex; flex-direction: column; }
+        input, button { margin: 5px; padding: 10px; font-size: 16px; }
+        #etiqueta { border: 1px solid black; padding: 15px; width: 400px; margin: 20px auto; background: #fff; text-align: left; display: flex; flex-direction: column; }
+        .top-section { display: flex; align-items: center; }
+        #logo img { width: 150px; margin-right: 15px; }
+        .empresa-info { font-size: 14px; }
+        .linha { border-top: 1px solid black; margin: 10px 0; }
+        .dados-container { display: flex; justify-content: space-between; align-items: center; }
+        #qrcode { margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>Gerador de Etiquetas</h1>
+    <form id="formEtiqueta">
+        <label>Nome:</label> <input type="text" id="nome" required>
+        <label>Endereço:</label> <input type="text" id="endereco" required>
+        <label>Código do Cliente:</label> <input type="text" id="codigo" required>
+        <label>Volume:</label> <input type="text" id="volume" required>
+        <label>Peso:</label> <input type="text" id="peso" required>
+        <button type="button" onclick="gerarEtiqueta()">Gerar Etiqueta</button>
+    </form>
+
+    <div id="etiqueta" style="display: none;">
+        <div class="top-section">
+            <div id="logo">
+                <img src="logo.png" alt="Logo da Empresa">
+            </div>
+            <div class="empresa-info">
+                <p><strong>USAPOOL COMÉRCIO E SERVIÇOS</strong></p>
+                <p>CNPJ: 08.847.918/0001-82</p>
+                <p>Rodovia Dom Paulo Loureiro, 1277, SP</p>
+                <p>Fone: (11) 964204759 | <a href="https://www.usapool.com.br">www.usapool.com.br</a></p>
+            </div>
+        </div>
+        <div class="linha"></div>
+        <div class="dados-container">
+            <div>
+                <p id="dados"></p>
+            </div>
+            <div id="qrcode"></div>
+        </div>
+        <div class="linha"></div>
+        <button onclick="baixarPDF()">Baixar PDF</button>
+    </div>
+
+    <script>
+        function gerarEtiqueta() {
+            let nome = document.getElementById('nome').value;
+            let endereco = document.getElementById('endereco').value;
+            let codigo = document.getElementById('codigo').value;
+            let volume = document.getElementById('volume').value;
+            let peso = document.getElementById('peso').value;
+
+            let dadosEtiqueta = `
+                <strong>Cliente:</strong> ${nome} <br>
+                <strong>Endereço:</strong> ${endereco} <br>
+                <strong>Código do Cliente:</strong> ${codigo} <br>
+                <strong>Volume:</strong> ${volume} <br>
+                <strong>Peso:</strong> ${peso} kg <br>
+            `;
+
+            document.getElementById('dados').innerHTML = dadosEtiqueta;
+            document.getElementById('qrcode').innerHTML = "";
+            new QRCode(document.getElementById('qrcode'), { text: codigo, width: 50, height: 50 });
+            document.getElementById('etiqueta').style.display = "block";
+        }
+
+        function baixarPDF() {
+            const { jsPDF } = window.jspdf;
+            let doc = new jsPDF();
+            
+            let logo = new Image();
+            logo.src = "logo.png";
+
+            let barcodeImg = new Image();
+            barcodeImg.src = "codigo_barras.png.jpeg";
+
+            logo.onload = function () {
+                doc.addImage(logo, "PNG", 10, 10, 65, 42);
+                doc.setFontSize(17);
+                doc.text("USAPOOL COMÉRCIO E SERVIÇOS", 80, 20);
+                doc.setFontSize(16);
+                doc.text("CNPJ: 08.847.918/0001-82", 80, 30);
+                doc.text("Rodovia Dom Paulo Loureiro, 1277, SP", 80, 40);
+                doc.text("Fone: (11) 964204759", 80, 50);
+                doc.text("www.usapool.com.br", 80, 60);
+                doc.line(10, 70, 200, 70);
+                doc.setFontSize(25);
+                doc.text(document.getElementById('dados').innerText, 10, 85);
+
+                let qrCanvas = document.querySelector("#qrcode canvas");
+                if (qrCanvas) {
+                    let qrImage = qrCanvas.toDataURL("image/png");
+                    doc.addImage(qrImage, "PNG", 155, 90, 23, 23);
+                }
+
+                barcodeImg.onload = function () {
+                    let largura = 180;
+                    let altura = 100;
+                    doc.addImage(barcodeImg, "PNG", 18, 160, largura, altura);
+                    doc.save("etiqueta.pdf");
+                };
+            };
+        }
+    </script>
+</body>
+</html>
