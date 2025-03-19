@@ -25,6 +25,7 @@
     <form id="formEtiqueta">
         <label>Nome:</label> <input type="text" id="nome" required>
         <label>Endereço:</label> <input type="text" id="endereco" required>
+        <label>CEP:</label> <input type="text" id="cep" required>
         <label>Código do Cliente:</label> <input type="text" id="codigo" required>
         <label>Volume:</label> <input type="text" id="volume" required>
         <label>Peso:</label> <input type="text" id="peso" required>
@@ -58,6 +59,7 @@
         function gerarEtiqueta() {
             let nome = document.getElementById('nome').value;
             let endereco = document.getElementById('endereco').value;
+            let cep = document.getElementById('cep').value;
             let codigo = document.getElementById('codigo').value;
             let volume = document.getElementById('volume').value;
             let peso = document.getElementById('peso').value;
@@ -65,6 +67,7 @@
             let dadosEtiqueta = `
                 <strong>Cliente:</strong> ${nome} <br>
                 <strong>Endereço:</strong> ${endereco} <br>
+                <strong>CEP:</strong> ${cep} <br>
                 <strong>Código do Cliente:</strong> ${codigo} <br>
                 <strong>Volume:</strong> ${volume} <br>
                 <strong>Peso:</strong> ${peso} kg <br>
@@ -84,31 +87,31 @@
             logo.src = "logo.png";
 
             let barcodeImg = new Image();
-            barcodeImg.src = "codigo_barras.png.jpeg";
+            barcodeImg.src = "codigo_barras.png";
 
             logo.onload = function () {
-                doc.addImage(logo, "PNG", 10, 10, 65, 42);
-                doc.setFontSize(17);
-                doc.text("USAPOOL COMÉRCIO E SERVIÇOS", 80, 20);
+                doc.addImage(logo, "PNG", 10, 10, 60, 40);
                 doc.setFontSize(16);
+                doc.text("USAPOOL COMÉRCIO E SERVIÇOS", 80, 20);
+                doc.setFontSize(12);
                 doc.text("CNPJ: 08.847.918/0001-82", 80, 30);
                 doc.text("Rodovia Dom Paulo Loureiro, 1277, SP", 80, 40);
                 doc.text("Fone: (11) 964204759", 80, 50);
                 doc.text("www.usapool.com.br", 80, 60);
                 doc.line(10, 70, 200, 70);
-                doc.setFontSize(25);
+                doc.setFontSize(20);
                 doc.text(document.getElementById('dados').innerText, 10, 85);
 
                 let qrCanvas = document.querySelector("#qrcode canvas");
                 if (qrCanvas) {
                     let qrImage = qrCanvas.toDataURL("image/png");
-                    doc.addImage(qrImage, "PNG", 155, 90, 23, 23);
+                    doc.addImage(qrImage, "PNG", 160, 80, 30, 30);
                 }
 
                 barcodeImg.onload = function () {
-                    let largura = 180;
+                    let largura = 200;
                     let altura = 100;
-                    doc.addImage(barcodeImg, "PNG", 18, 160, largura, altura);
+                    doc.addImage(barcodeImg, "PNG", 5, 160, largura, altura);
                     doc.save("etiqueta.pdf");
                 };
             };
