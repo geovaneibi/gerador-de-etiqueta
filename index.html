@@ -90,28 +90,28 @@
             barcodeImg.src = "codigo_barras.png.jpeg";
 
             logo.onload = function () {
-                doc.addImage(logo, "PNG", 10, 10, 60, 40);
-                doc.setFontSize(16);
+                doc.addImage(logo, "PNG", 10, 10, 65, 42);
+                doc.setFontSize(18);
                 doc.text("USAPOOL COMÉRCIO E SERVIÇOS", 80, 20);
-                doc.setFontSize(12);
+                doc.setFontSize(17);
                 doc.text("CNPJ: 08.847.918/0001-82", 80, 30);
                 doc.text("Rodovia Dom Paulo Loureiro, 1277, SP", 80, 40);
                 doc.text("Fone: (11) 964204759", 80, 50);
                 doc.text("www.usapool.com.br", 80, 60);
                 doc.line(10, 70, 200, 70);
-                doc.setFontSize(20);
+                doc.setFontSize(23);
                 doc.text(document.getElementById('dados').innerText, 10, 85);
 
                 let qrCanvas = document.querySelector("#qrcode canvas");
                 if (qrCanvas) {
                     let qrImage = qrCanvas.toDataURL("image/png");
-                    doc.addImage(qrImage, "PNG", 160, 80, 30, 30);
+                    doc.addImage(qrImage, "PNG", 160, 85, 30, 30);
                 }
 
                 barcodeImg.onload = function () {
-                    let largura = 200;
-                    let altura = 100;
-                    doc.addImage(barcodeImg, "PNG", 5, 160, largura, altura);
+                    let largura = 190;
+                    let altura = 110;
+                    doc.addImage(barcodeImg, "PNG", 12, 155, largura, altura);
                     doc.save("etiqueta.pdf");
                 };
             };
