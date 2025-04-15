@@ -65,15 +65,15 @@
             let peso = document.getElementById('peso').value;
 
             let dadosEtiqueta = `
-                <strong>Cliente:</strong> ${nome} <br>
-                <strong>Endereço:</strong> ${endereco} <br>
-                <strong>CEP:</strong> ${cep} <br>
-                <strong>Código do Cliente:</strong> ${codigo} <br>
-                <strong>Volume:</strong> ${volume} <br>
-                <strong>Peso:</strong> ${peso} kg <br>
+                Cliente: ${nome}\n
+                Endereço: ${endereco}\n
+                CEP: ${cep}\n
+                Código do Cliente: ${codigo}\n
+                Volume: ${volume}\n
+                Peso: ${peso} kg\n
             `;
 
-            document.getElementById('dados').innerHTML = dadosEtiqueta;
+            document.getElementById('dados').innerText = dadosEtiqueta;
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById('qrcode'), { text: codigo, width: 50, height: 50 });
             document.getElementById('etiqueta').style.display = "block";
@@ -99,19 +99,36 @@
                 doc.text("Fone: (11) 964204759", 80, 50);
                 doc.text("www.usapool.com.br", 80, 60);
                 doc.line(10, 70, 200, 70);
+
+                // Dados
+                const dados = document.getElementById('dados').innerText.split('\n').map(l => l.trim()).filter(Boolean);
                 doc.setFontSize(23);
-                doc.text(document.getElementById('dados').innerText, 10, 85);
 
-                let qrCanvas = document.querySelector("#qrcode canvas");
-                if (qrCanvas) {
-                    let qrImage = qrCanvas.toDataURL("image/png");
-                    doc.addImage(qrImage, "PNG", 160, 85, 30, 30);
-                }
+                const xEsquerda = 10;
+                const yInicial = 85;
+                let linhaAltura = 10;
+                let yAtual = yInicial;
 
+                dados.forEach((linha, index) => {
+                    doc.text(linha, xEsquerda, yAtual);
+
+                    // Inserir o QR code ao lado de "Código do Cliente" ou "Volume"
+                    if (linha.includes("Código do Cliente") || linha.includes("Volume")) {
+                        const qrCanvas = document.querySelector("#qrcode canvas");
+                        if (qrCanvas) {
+                            const qrImage = qrCanvas.toDataURL("image/png");
+                            doc.addImage(qrImage, "PNG", 150, yAtual - 10, 30, 30); // ajuste fino da posição
+                        }
+                    }
+
+                    yAtual += linhaAltura;
+                });
+
+                // Código de barras depois dos dados
                 barcodeImg.onload = function () {
                     let largura = 190;
                     let altura = 110;
-                    doc.addImage(barcodeImg, "PNG", 12, 155, largura, altura);
+                    doc.addImage(barcodeImg, "PNG", 12, yAtual + 10, largura, altura);
                     doc.save("etiqueta.pdf");
                 };
             };
